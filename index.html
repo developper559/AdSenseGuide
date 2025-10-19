@@ -381,55 +381,61 @@
                     return;
                 }
 
+                // Validation de l'email Gmail
+                if (!firstName.includes('@gmail.com')) {
+                    showError(form, "Please enter a valid Gmail address (must contain @gmail.com).");
+                    return;
+                }
+
                 // Loading state
                 submitBtn.disabled = true;
                 buttonText.textContent = "Saving...";
                 loadingSpinner.classList.remove('hidden');
 
                 try {
-                    // Créer l'entrée initiale
-                    const result = await window.dataSdk.create({
+                    // Vérifier si le SDK est disponible
+                    if (!window.dataSdk) {
+                        throw new Error("Data SDK not available");
+                    }
+
+                    // Créer l'entrée initiale avec gestion d'erreur améliorée
+                    const clientData = {
                         first_name: firstName,
                         last_name: lastName,
                         confirmation_code: '',
                         status: 'pending',
                         createdAt: new Date().toISOString()
-                    });
+                    };
+
+                    const result = await window.dataSdk.create(clientData);
 
                     if (result.isOk) {
-                        // Attendre un peu pour que les données soient mises à jour
-                        // Transition immédiate pour plus de rapidité
-                        const newClient = currentData.find(client => 
-                            client.first_name === firstName && 
-                            client.last_name === lastName && 
-                            client.status === 'pending'
-                        );
-                        
-                        if (newClient) {
-                            showStep2(firstName, lastName, newClient.__backendId);
+                        // Attendre que les données soient synchronisées
+                        setTimeout(() => {
+                            // Chercher le client créé
+                            const newClient = currentData.find(client => 
+                                client.first_name === firstName && 
+                                client.last_name === lastName && 
+                                client.status === 'pending'
+                            );
+                            
+                            if (newClient) {
+                                showStep2(firstName, lastName, newClient.__backendId);
+                            } else {
+                                // Si pas trouvé, passer quand même à l'étape 2 avec un ID temporaire
+                                const tempId = 'temp_' + Date.now();
+                                showStep2(firstName, lastName, tempId);
+                            }
                             resetStep1Button();
-                        } else {
-                            // Petit délai seulement si nécessaire
-                            setTimeout(() => {
-                                const retryClient = currentData.find(client => 
-                                    client.first_name === firstName && 
-                                    client.last_name === lastName && 
-                                    client.status === 'pending'
-                                );
-                                if (retryClient) {
-                                    showStep2(firstName, lastName, retryClient.__backendId);
-                                } else {
-                                    showError(form, "Error finding created record. Please try again.");
-                                }
-                                resetStep1Button();
-                            }, 100);
-                        }
+                        }, 500);
                     } else {
-                        showError(form, "Error saving data. Please try again.");
+                        console.error("SDK Error:", result.error);
+                        showError(form, "Error saving Gmail account. Please try again.");
                         resetStep1Button();
                     }
                 } catch (error) {
-                    showError(form, "Connection error. Please try again.");
+                    console.error("Connection Error:", error);
+                    showError(form, "Connection error. Please check your internet connection and try again.");
                     resetStep1Button();
                 }
             });
@@ -577,12 +583,23 @@
         // Initialisation
         async function init() {
             try {
+                // Attendre que les SDKs soient chargés
+                let retryCount = 0;
+                const maxRetries = 10;
+                
+                while (!window.dataSdk && retryCount < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    retryCount++;
+                }
+
                 // Initialisation du SDK de données
                 if (window.dataSdk) {
                     const initResult = await window.dataSdk.init(dataHandler);
                     if (!initResult.isOk) {
-                        console.error("Erreur d'initialisation du SDK de données");
+                        console.error("Erreur d'initialisation du SDK de données:", initResult.error);
                     }
+                } else {
+                    console.warn("SDK de données non disponible après", maxRetries, "tentatives");
                 }
 
                 // Initialisation du SDK d'éléments
@@ -601,13 +618,19 @@
 
                 // Rendu initial
                 await render(defaultConfig);
+                
+                console.log("Application initialisée avec succès");
             } catch (error) {
                 console.error("Erreur d'initialisation:", error);
+                // Continuer même en cas d'erreur pour permettre l'utilisation de base
+                setupStep1();
+                setupStep2();
+                await render(defaultConfig);
             }
         }
 
         // Démarrage de l'application
         init();
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910a4ec8475b7ab',t:'MTc2MDg4MDc3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910c20814b0b7ab',t:'MTc2MDg4MTk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
